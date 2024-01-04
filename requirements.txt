@@ -1,4 +1,4 @@
-reflex==0.3.7
+reflex
 pandas
 scikit-learn
 requests
