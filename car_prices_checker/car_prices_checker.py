@@ -8,4 +8,3 @@ from .state import State
 app = rx.App()
 app.add_page(index)
 app.add_page(results)
-app.compile()

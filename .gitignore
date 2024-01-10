@@ -184,6 +184,8 @@
 
 .web
 
+.web/
+
 .webassets-cache
 
 /site
@@ -263,5 +265,3 @@ venv.bak/
 venv/
 
 wheels/
-
-.web/
