@@ -1,6 +1,1 @@
-reflex
-pandas
-scikit-learn
-requests
-bs4
-lxml
+bs4==0.0.1
