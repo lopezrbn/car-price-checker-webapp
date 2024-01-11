@@ -258,6 +258,8 @@ share/python-wheels/
 
 target/
 
+test.py
+
 var/
 
 venv.bak/

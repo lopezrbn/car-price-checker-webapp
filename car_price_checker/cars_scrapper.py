@@ -1,7 +1,6 @@
 import pandas as pd
 import requests
 import bs4
-# import lxml
 import time
 import os
 

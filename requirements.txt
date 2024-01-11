@@ -1,3 +1,9 @@
-bs4==0.0.1
+bs4
 
-reflex==0.3.8
+pandas
+
+reflex
+
+requests
+
+scikit-learn
