@@ -3,41 +3,16 @@ from ..state import State
 
 
 def results():
-    return rx.vstack(
-        rx.hstack(
-            rx.text("Manufacturer:"),
-            rx.text(State.selected_manufacturer),
-        ),
-        rx.hstack(
-            rx.text("Model:"),
-            rx.text(State.selected_model),
-        ),
-        rx.hstack(
-            rx.text("Year:"),
-            rx.text(State.selected_year),
-        ),
-        rx.hstack(
-            rx.text("Fuel:"),
-            rx.text(State.selected_fuel),
-        ),
-        rx.hstack(
-            rx.text("Transmission:"),
-            rx.text(State.selected_transmission),
-        ),
-        rx.hstack(
-            rx.text("Horsepower:"),
-            rx.text(State.selected_horsepower),
-        ),
-        rx.hstack(
-            rx.text("Kms:"),
-            rx.text(State.selected_kms),
-        ),
-        rx.hstack(
-            rx.text("Predicted value:"),
-            rx.text(State.predicted_value),
-        ),
-        rx.button(
+    return rx.center(
+        rx.vstack(
+            rx.text(f"Your {State.selected_year} {State.selected_manufacturer} {State.selected_model}, {State.selected_fuel} fuel, {State.selected_transmission} transmission, {State.selected_horsepower} HP and {State.selected_kms} Kms is worth:"),
+            rx.spacer(),
+            rx.heading(f"{State.predicted_value_formatted} €"),
+            rx.spacer(),
+            rx.button(
                 "Back",
                 on_click=State.back_handler,
             ),
+        ),
+        height="90vh",
     )

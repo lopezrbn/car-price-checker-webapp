@@ -2,91 +2,86 @@ import reflex as rx
 from ..state import State
 
 
+def create_select_line(text_label, options_param, value_param, placeholder_param, on_change_param):
+    return rx.hstack(
+        rx.box(
+            rx.text(
+                text_label,
+            ),
+            width="10em",
+        ),
+        rx.box(
+            rx.select(
+                options_param,
+                value=value_param,
+                placeholder=placeholder_param,
+                on_change=on_change_param,
+            ),
+            width="15em",
+        ),
+        width="25em",
+        justify="space-between",
+    )
+
+
+def create_number_input_line(text_label, value_param, placeholder_param, on_change_param):
+    return rx.hstack(
+        rx.box(
+            rx.text(
+                text_label,
+            ),
+            width="10em",
+        ),
+        rx.box(
+            rx.number_input(
+                value=value_param,
+                placeholder=placeholder_param,
+                on_change=on_change_param,
+            ),
+            width="15em",
+        ),
+        width="25em",
+        justify="space-between"
+    )
+
+
 def index():
     return rx.center(
+        
         rx.vstack(
-            rx.hstack(
-                rx.text("Manufacturer:"),
-                rx.select(
-                    State.manufacturers_list,
-                    value=State.selected_manufacturer,
-                    placeholder="Select manufacturer",
-                    on_change=State.set_selected_manufacturer,
-                ),
-            ),
+            rx.heading("How much is your car worth?"),
+            rx.spacer(),
+            rx.text("Please, enter the following information:"),
+            rx.spacer(),
+            create_select_line("Manufacturer:", State.manufacturers_list, State.selected_manufacturer, "Select manufacturer", State.set_selected_manufacturer,),
             rx.cond(
                 State.selected_manufacturer != "",
-                rx.hstack(
-                    rx.text("Model:"),
-                    rx.select(
-                        State.models_list,
-                        value=State.selected_model,
-                        placeholder="Select model",
-                        on_change=State.set_selected_model,
-                    ),
-                ),
+                create_select_line("Model:", State.models_list, State.selected_model, "Select model", State.set_selected_model,),
             ),
             rx.cond(
                 State.selected_model != "",
-                rx.hstack(
-                    rx.text("Year:"),
-                    rx.select(
-                        State.years_list,
-                        value=State.selected_year,
-                        placeholder="Select year",
-                        on_change=State.set_selected_year,
-                    ),
-                ),
+                create_select_line("Year:", State.years_list, State.selected_year, "Select year", State.set_selected_year,),
             ),
             rx.cond(
                 State.selected_year != "",
-                rx.hstack(
-                    rx.text("Fuel:"),
-                    rx.select(
-                        State.fuels_list,
-                        value=State.selected_fuel,
-                        placeholder="Select fuel",
-                        on_change=State.set_selected_fuel,
-                    ),
-                ),
+                create_select_line("Fuel:", State.fuels_list, State.selected_fuel, "Select fuel", State.set_selected_fuel,),
             ),
             rx.cond(
                 State.selected_fuel != "",
-                rx.hstack(
-                    rx.text("Transmission:"),
-                    rx.select(
-                        State.transmissions_list,
-                        value=State.selected_transmission,
-                        placeholder="Select transmission",
-                        on_change=State.set_selected_transmission,
-                    ),
-                ),
+                create_select_line("Transmission:", State.transmissions_list, State.selected_transmission, "Select transmission", State.set_selected_transmission,),
             ),
             rx.cond(
                 State.selected_transmission != "",
-                rx.hstack(
-                    rx.text("Horsepower:"),
-                    rx.number_input(
-                        value=State.selected_horsepower,
-                        placeholder="Enter horsepower",
-                        on_change=State.set_selected_horsepower,
-                    ),
-                ),
+                create_number_input_line("Horsepower:", State.selected_horsepower, "Enter kms", State.set_selected_horsepower,),
             ),
             rx.cond(
                 State.selected_horsepower != 0,
-                rx.hstack(
-                    rx.text("Kms:"),
-                    rx.number_input(
-                        value=State.selected_kms,
-                        placeholder="Enter kms",
-                        on_change=State.set_selected_kms,
-                    ),
-                ),
+                create_number_input_line("Kms:", State.selected_kms, "Enter kms", State.set_selected_kms,),
             ),
             rx.button(
                 "Search",
                 on_click=State.search_handler,
             ),
         ),
+        height="90vh",
     )
