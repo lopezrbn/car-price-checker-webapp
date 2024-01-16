@@ -13,7 +13,7 @@ class State(rx.State):
     current_year: int = date.today().year
     manufacturers_list: List[str] = list(cars.keys())
     models_list: List[str] = []
-    years_list: List[str] = list(range(current_year, 1989, -1))
+    years_list: List[str] = list(range(current_year, 2009, -1))
     fuels_list: List[str] = ["Diesel", "Gasolina", "Eléctrico"]
     transmissions_list: List[str] = ["Manual", "Automática"]
     selected_manufacturer: str = ""
@@ -48,8 +48,11 @@ class State(rx.State):
         X_pred = pd.DataFrame([car_to_predict, ], index=[0])
         print(X_pred)
         self.predicted_value = make_prediction(self.selected_manufacturer, self.selected_model, X_pred)
-        self.predicted_value = int(self.predicted_value)
-        print(f"Predicted value: {self.predicted_value} €")
+        if self.predicted_value < 0:
+            self.predicted_value = "Not enough data to predict the value of this car"
+        else:
+            self.predicted_value = int(self.predicted_value)
+        print(f"Predicted value: {self.predicted_value}")
         return rx.redirect("/results")
     
 
@@ -60,11 +63,15 @@ class State(rx.State):
     # Computed vars
     @rx.var
     def predicted_value_formatted(self):
-        predicted_value_formatted = ""
-        for i, digit in enumerate(str(self.predicted_value)[::-1]):
-            if i % 3 != 0:
-                predicted_value_formatted += digit
-            else:
-                predicted_value_formatted += "." + digit
-        predicted_value_formatted = predicted_value_formatted[-1:0:-1]
-        return predicted_value_formatted
+        if isinstance(self.predicted_value, int):
+            predicted_value_formatted = ""
+            for i, digit in enumerate(str(self.predicted_value)[::-1]):
+                if i % 3 != 0:
+                    predicted_value_formatted += digit
+                else:
+                    predicted_value_formatted += "." + digit
+            predicted_value_formatted = predicted_value_formatted[-1:0:-1]
+            predicted_value_formatted += " €"
+            return predicted_value_formatted
+        else:
+            return self.predicted_value
