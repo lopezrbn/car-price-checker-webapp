@@ -1,7 +1,5 @@
 bs4
 
-locale
-
 pandas
 
 reflex

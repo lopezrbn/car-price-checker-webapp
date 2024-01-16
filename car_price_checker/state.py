@@ -1,14 +1,10 @@
 import reflex as rx
 import pandas as pd
-import locale
 from typing import Dict, List
 from datetime import date
 from .pipeline import make_prediction
 
 from .data.cars_manuf_and_models import cars
-
-
-locale.setlocale(locale.LC_ALL, "es_ES")
 
 
 class State(rx.State):
@@ -45,7 +41,7 @@ class State(rx.State):
             "km": int(self.selected_kms) if self.selected_kms != "" else 0,
             "power_hp": int(self.selected_horsepower) if self.selected_horsepower != "" else 0,
             "no_doors": 5,
-            "age": self.current_year - (int(self.selected_year) if self.selected_year != "" else 0),
+            "age": self.current_year - (int(self.selected_year) if self.selected_year != "" else 0) - 1,
             "fuel": self.selected_fuel,
             "transmission": self.selected_transmission.lower(),
         }
@@ -64,4 +60,11 @@ class State(rx.State):
     # Computed vars
     @rx.var
     def predicted_value_formatted(self):
-        return locale.format_string("%d", self.predicted_value, grouping=True)
+        predicted_value_formatted = ""
+        for i, digit in enumerate(str(self.predicted_value)[::-1]):
+            if i % 3 != 0:
+                predicted_value_formatted += digit
+            else:
+                predicted_value_formatted += "." + digit
+        predicted_value_formatted = predicted_value_formatted[-1:0:-1]
+        return predicted_value_formatted
