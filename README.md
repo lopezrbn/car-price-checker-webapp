@@ -54,6 +54,8 @@ The web app is hosted in my own VPS as I explained in this [repository](https://
 
 As the main goal of the project is didactic, here comes an explanation about the different parts that compose it and how they work.
 
+<br>
+
 
 ### 3.1. Data scraping from [coches.com](https://www.coches.com/)
 
@@ -62,6 +64,8 @@ And in every data science project, the first step is getting the data. So I have
 A quick glance at the search page of any given car (Volkswagen Golf in this example), shows the following:
 
 ![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/d8994835-a2e2-4ee2-a9af-bae9d2c74f1b)
+<br>
+
 
 Where you can see, for every listed car:
 - Selling price: 16.600 € on cash payment / 15.770 € if financed. Please note that I will be only using the cash payment price in the future for training the machine-learning model.
@@ -70,6 +74,8 @@ Where you can see, for every listed car:
 - City: Valencia
 - Year: 2020
 - Kms: 73.913 Km
+<br>
+
 
 And while it seems that all the relevant car data is published on this page, however, we can check this if we click on the ad:
 
@@ -85,13 +91,15 @@ While month and door no. are non-critical parameters (anyway will help to fine t
 
 <br>
 
-So let's start with the code for the data scraping, which you can in the file [cars_scraper.py](https://github.com/lopezrbn/car-price-checker/blob/main/car_price_checker/cars_scraper.py).
+So let's start with the code for the data scraping, which you can find in the file [cars_scraper.py](https://github.com/lopezrbn/car-price-checker/blob/main/car_price_checker/cars_scraper.py).
 
 And one of the first lines of code you find in this file is:
 
 ```
 from data.cars_manuf_and_models import cars
 ```
+<br>
+
 
 Here we are importing the file [cars_manuf_and_models.py](https://github.com/lopezrbn/car-price-checker/blob/main/car_price_checker/data/cars_manuf_and_models.py), which is a Python dictionary with all the car manufacturers as keys of the dictionary, and a list containing every car model for every manufacturer as the values. I fetched this list manually from [coches.com](https://www.coches.com/), including all the cars that the web is publishing and that we will be scraping as data for our machine-learning model.
 
@@ -100,6 +108,8 @@ Then, for every car inside this dictionary, we are looping and following the sam
 1. Getting all the ad links published for any given car model and putting them in a list
 
 2. Navigating to each link in the list to fetch all the car's data
+<br>
+
 
 And in both of these steps, we will be using the same technique to scrap the data:
 
@@ -108,6 +118,8 @@ And in both of these steps, we will be using the same technique to scrap the dat
 - Search inside the soup for the HTML elements in which the information we need is contained.
 - Dump every collected parameter in a list
 - Finally export the list with the scraped information.
+<br>
+
 
 So let's start with the first step:
 
@@ -120,6 +132,8 @@ If we get back to the search result page at [coches.com](https://www.coches.com/
 ![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/4761bdb6-e32a-42fe-99ff-f6b2edad47be)
 
 This is `https://www.coches.com/coches-segunda-mano/volkswagen-golf.htm`. Where we can see that the manufacturer `volkswagen` is separated from the model `golf` with a hyphen `-`.
+<br>
+
 
 Let's see if this pattern is replicated with other cars. Here we can see the search result page for Renault Clio:
 
@@ -129,6 +143,7 @@ And indeed the URL follows the same pattern with the manufacturer `renault` sepa
 
 
 
+<br>
 ### 3.2 Pipelines
 
 
