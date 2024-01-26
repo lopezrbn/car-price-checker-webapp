@@ -125,7 +125,7 @@ So let's start with the first step:
 
 #### 3.1.1 Getting all the ad links published for any given car model and putting them in a list
 
-The first we need is to get the HTTP addresses we will be scraping through the `requests` library.
+The first we need is to get the URL we will be scraping through the `requests` library.
 
 If we get back to the search result page at [coches.com](https://www.coches.com/), we can see the URL as follow:
 
@@ -137,9 +137,60 @@ This is `https://www.coches.com/coches-segunda-mano/volkswagen-golf.htm`. Where 
 
 Let's see if this pattern is replicated with other cars. Here we can see the search result page for Renault Clio:
 
-![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/607d3883-2e31-41d6-84ff-d291a54ba3fe)
+![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/47cc5974-b487-461d-ac55-af94328a8aba)
 
 And indeed the URL follows the same pattern with the manufacturer `renault` separated from the model `clio` with a hyphen `-`.
+
+But, as we can also see in the image, there are many more cars listed than we can see only on the first page. Actually, according to the image, there are 2.304 offers for the Renault Clio.
+
+So let's go to page 2 and see what happens with the URL:
+
+![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/9e67496e-d93b-4877-ac2b-ad37ecef9321)
+
+Easy. We just need to add `?page=1` to the URL, noting that the parameter `page` will be always the current page minus one (the first page is `page=0`).
+
+So finally, we can conclude that the URL to scrap will be constructed as:
+
+```
+https://www.coches.com/coches-segunda-mano/<manufacturer>-<model>.htm?page=<page_number>
+```
+<br>
+
+
+Once we have the base URL to be scraped, and know how to change it according to the page displayed, we can start to scrap data on every page using a loop.
+
+However, how many pages should we scrap? The answer can be obtained from the number of cars appearing at the top of the page that we saw above (2.304 cars for Renault Clio). If we notice there are 20 cars listed on every page, `2.304 cars / 20 cars per page = 115,2 pages`, rounded up to 116 pages.
+
+So the next code snippet does this:
+
+![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/d3bbdb41-4144-470d-b7b3-de28f11f3174)
+
+1. Construct `initial_url` as explained above.
+2. Get the HTML response of `initial_url` using `requests` and assign it to the variable `res`.
+3. Parse the result `res` using `BeautifulSoup` and assign it to the variable `soup`.
+4. Find in the soup the number of cars listed using HTML/CSS properties and assign it to the variable `cars_to_get`.
+5. Initialize a `sleep_timer=0`, as a security measure that can be used later to make the script wait between every iteration of the loop to prevent the web page from banning us because of flooding with petitions. In this case, [coches.com](https://www.coches.com/) seems to not check for users scraping, so we don't need to set any time (`sleep_timer=0`). Just add any number (in seconds) if your scraped page bans you.
+6. Initialize `links=[]` as a list in which we will be adding the links of every ad published, and `counter=0` as an auxiliary variable that we will be using to count how many pages we are going to scrap.
+7. Finally, calculate the number of pages to scrap as `number_of_cars / 20 cars_per_page` and round the number up. To avoid errors, make the `pages=1` if there are no results.
+
+<br>
+
+
+And now we can start looping through the number of pages calculated and collecting the particular URL for every car advertised on the platform.
+
+![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/b48da6e1-d92d-479f-baee-df4eb99ca3a6)
+
+The code above makes the following:
+
+1. Iterate the number of pages calculated before in the variable `page`.
+2. Construct the URL as `initial_url` + `page`, get the HTML response through `requests`, and parse the results using `BeautifulSoup`.
+3. Search inside the soup for the links of every one of the 20 ads listed on every page and assign them as a list to the variable `soup_links`.
+4. Then, we iterate `soup_links` to unpack every link using the attribute `href`.
+5. Sleep in case we need it as explained above, increase the counter and start a new iteration.
+6. And once the loop finishes, print the result of the scraping.
+
+
+
 
 
 
