@@ -123,7 +123,7 @@ And in both of these steps, we will be using the same technique to scrap the dat
 
 So let's start with the first step:
 
-#### 3.1.1 Getting all the ad links published for any given car model and putting them in a list
+#### 3.1.1 Step1: Getting all the ad links published for any given car model and putting them in a list
 
 The first we need is to get the URL we will be scraping through the `requests` library.
 
@@ -185,12 +185,16 @@ The code above makes the following:
 1. Iterate the number of pages calculated before in the variable `page`.
 2. Construct the URL as `initial_url` + `page`, get the HTML response through `requests`, and parse the results using `BeautifulSoup`.
 3. Search inside the soup for the links of every one of the 20 ads listed on every page and assign them as a list to the variable `soup_links`.
-4. Then, we iterate `soup_links` to unpack every link using the attribute `href`.
+4. Then, we iterate `soup_links` to unpack every link using the attribute `href`, and append them to variable `links` initialized before.
 5. Sleep in case we need it as explained above, increase the counter and start a new iteration.
 6. And once the loop finishes, print the result of the scraping.
 
+So, finally, we have the links to the pages of every car listed on the platform in the variable `links`, ready to go on with step 2.
+
+<br>
 
 
+#### 3.1.2 Step2: Navigating to each link in the list to fetch all the car's data
 
 
 
