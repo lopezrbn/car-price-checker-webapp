@@ -83,6 +83,49 @@ Some more relevant data appears:
 
 While month and door no. are non-critical parameters (anyway will help to fine tuning the model), transmission and power are two very critical features for any given car that will highly impact the price, so we will need to fetch this data also, which makes a bit harder for building the data scraper as we will need to visit the specific ad page for every car listed.
 
+<br>
+
+So let's start with the code for the data scraping, which you can in the file [cars_scraper.py](https://github.com/lopezrbn/car-price-checker/blob/main/car_price_checker/cars_scraper.py).
+
+And one of the first lines of code you find in this file is:
+
+```
+from data.cars_manuf_and_models import cars
+```
+
+Here we are importing the file [cars_manuf_and_models.py](https://github.com/lopezrbn/car-price-checker/blob/main/car_price_checker/data/cars_manuf_and_models.py), which is a Python dictionary with all the car manufacturers as keys of the dictionary, and a list containing every car model for every manufacturer as the values. I fetched this list manually from [coches.com](https://www.coches.com/), including all the cars that the web is publishing and that we will be scraping as data for our machine-learning model.
+
+Then, for every car inside this dictionary, we are looping and following the same process for the data scraping which consists of two separate steps:
+
+1. Getting all the ad links published for any given car model and putting them in a list
+
+2. Navigating to each link in the list to fetch all the car's data
+
+And in both of these steps, we will be using the same technique to scrap the data:
+
+- Use the `requests` library to collect the HTML response of the web page.
+- Use the `BeautifulSoup` library to parse the HTML code and make it easier to read.
+- Search inside the soup for the HTML elements in which the information we need is contained.
+- Dump every collected parameter in a list
+- Finally export the list with the scraped information.
+
+So let's start with the first step:
+
+#### 3.1.1 Getting all the ad links published for any given car model and putting them in a list
+
+The first we need is to get the HTTP addresses we will be scraping through the `requests` library.
+
+If we get back to the search result page at [coches.com](https://www.coches.com/), we can see the URL as follow:
+
+![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/4761bdb6-e32a-42fe-99ff-f6b2edad47be)
+
+This is `https://www.coches.com/coches-segunda-mano/volkswagen-golf.htm`. Where we can see that the manufacturer `volkswagen` is separated from the model `golf` with a hyphen `-`.
+
+Let's see if this pattern is replicated with other cars. Here we can see the search result page for Renault Clio:
+
+![image](https://github.com/lopezrbn/car-price-checker/assets/113603061/607d3883-2e31-41d6-84ff-d291a54ba3fe)
+
+And indeed the URL follows the same pattern with the manufacturer `renault` separated from the model `clio` with a hyphen `-`.
 
 
 
