@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from datetime import date
 
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -35,7 +36,7 @@ def train_model(manuf, mod):
     df.loc[df["km"]=="NUEVO", "km"] = 0
     df["power_hp"] = df["power_hp"].str.replace(" CV", "")
     df["no_doors"] = df["no_doors"].str.replace(" puertas", "")
-    df["age"] = 2023 - df["year"]
+    df["age"] = date.today().year - df["year"] - 1
     num_cols.append("age")
     df = df.astype({"month":"int", "year":"int", "km": int, "power_hp": int, "no_doors": int, "price": int})
 
@@ -54,6 +55,8 @@ def train_model(manuf, mod):
     # Creation of X and y
     X = df[num_cols + cat_cols].copy()
     y = df[target].copy()
+    print(X)
+    print(y)
 
     # Pipelines
 
@@ -64,7 +67,7 @@ def train_model(manuf, mod):
     )
     pipe_cat = Pipeline(
         steps=[
-            ("oh_encoder", OneHotEncoder(handle_unknown='ignore', sparse=False, drop="first", dtype=int))
+            ("oh_encoder", OneHotEncoder(handle_unknown='ignore', sparse_output=False, drop="first", dtype=int))
         ]
     )
     col_transformer = ColumnTransformer(
@@ -88,6 +91,10 @@ def train_model(manuf, mod):
 
     # Fitting of the model
     pipe_global.fit(X, y)
+    trained_model = pipe_global.named_steps["model"]
+    print(f"Ecuación del modelo: y = {trained_model.intercept_:.4f} ", end="")
+    for i, coef in enumerate(trained_model.coef_):
+        print(f"+ ({coef:.4f} * x{i}) ", end="")
     print(f"R^2: {pipe_global.score(X,y)}")
 
     return pipe_global
@@ -95,4 +102,6 @@ def train_model(manuf, mod):
 
 def make_prediction(manuf, model, X_pred):
     pipe = train_model(manuf, model)
+    print(X_pred)
+    print(pipe.predict(X_pred)[0])
     return pipe.predict(X_pred)[0]
