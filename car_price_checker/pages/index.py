@@ -20,7 +20,7 @@ def create_select_line(text_label, options_param, value_param, placeholder_param
             width="15em",
         ),
         width="25em",
-        justify="space-between",
+        justify="between",
     )
 
 
@@ -33,7 +33,8 @@ def create_number_input_line(text_label, value_param, placeholder_param, on_chan
             width="10em",
         ),
         rx.box(
-            rx.number_input(
+            rx.input(
+                type="number",
                 value=value_param,
                 placeholder=placeholder_param,
                 on_change=on_change_param,
@@ -41,7 +42,7 @@ def create_number_input_line(text_label, value_param, placeholder_param, on_chan
             width="15em",
         ),
         width="25em",
-        justify="space-between"
+        justify="between"
     )
 
 
