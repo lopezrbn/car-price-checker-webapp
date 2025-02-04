@@ -1,5 +1,4 @@
 cars = {
-    "": [],
     "Abarth": ["124 Spider", "500", "595", "Grande Punto", "Punto", "Punto Evo"],
     "Aiways": ["U5", "U6"],
     "Alfa Romeo": ["145", "146", "147", "155", "156", "156 Crosswagon", "159", "164", "166", "33", "4C", "75", "90", "Alfetta", "Brera", "Giulia", "Giulietta", "GT", "GTV", "MiTo", "Spider", "Sprint", "Stelvio", "Tonalde"],
