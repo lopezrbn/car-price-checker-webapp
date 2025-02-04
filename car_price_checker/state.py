@@ -16,11 +16,11 @@ class State(rx.State):
     years_list: List[str] = list(range(current_year, 2009, -1))
     fuels_list: List[str] = ["Diesel", "Gasolina", "Eléctrico"]
     transmissions_list: List[str] = ["Manual", "Automática"]
-    selected_manufacturer: str = ""
-    selected_model: str = ""
-    selected_year: str = ""
-    selected_fuel: str = ""
-    selected_transmission: str = ""
+    selected_manufacturer: str = manufacturers_list[0] if manufacturers_list else "Unknown"
+    selected_model: str = models_list[0] if models_list else "Unknown"
+    selected_year: str = years_list[0] if years_list else current_year
+    selected_fuel: str = fuels_list[0] if fuels_list else "Unknown"
+    selected_transmission: str = transmissions_list[0] if transmissions_list else "Unknown"
     selected_horsepower: int = 0
     selected_kms: int = 0
     selected_doors: int = 0
