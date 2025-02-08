@@ -16,16 +16,27 @@ class State(rx.State):
     years_list: List[str] = list(range(current_year, 2009, -1))
     fuels_list: List[str] = ["Diesel", "Gasolina", "Eléctrico"]
     transmissions_list: List[str] = ["Manual", "Automática"]
-    selected_manufacturer: str = manufacturers_list[0] if manufacturers_list else "Unknown"
-    selected_model: str = models_list[0] if models_list else "Unknown"
-    selected_year: str = years_list[0] if years_list else current_year
-    selected_fuel: str = fuels_list[0] if fuels_list else "Unknown"
-    selected_transmission: str = transmissions_list[0] if transmissions_list else "Unknown"
-    selected_horsepower: int = 0
+    cars: Dict[str, List] = cars
+    selected_manufacturer: str = ""
+    selected_model: str = ""
+    selected_year: str = ""
+    selected_fuel: str = ""
+    selected_transmission: str = ""
+    selected_power: int = 0
     selected_kms: int = 0
     selected_doors: int = 0
-    cars: Dict[str, List] = cars
     predicted_value: int = 0
+
+    def reset_selected_vars(self):
+        self.selected_manufacturer = ""
+        self.selected_model = ""
+        self.selected_year = ""
+        self.selected_fuel = ""
+        self.selected_transmission = ""
+        self.selected_power = 0
+        self.selected_kms = 0
+        self.selected_doors = 0
+        self.predicted_value = 0
 
     # Event handlers
     def set_selected_manufacturer(self, value):
@@ -39,7 +50,7 @@ class State(rx.State):
             "year": int(self.selected_year) if self.selected_year != "" else 0,
             "month": 6,
             "km": int(self.selected_kms) if self.selected_kms != "" else 0,
-            "power_hp": int(self.selected_horsepower) if self.selected_horsepower != "" else 0,
+            "power_hp": int(self.selected_power) if self.selected_power != "" else 0,
             "no_doors": 5,
             "age": self.current_year - (int(self.selected_year) if self.selected_year != "" else 0) - 1,
             "fuel": self.selected_fuel,
@@ -57,6 +68,7 @@ class State(rx.State):
     
 
     def back_handler(self):
+        self.reset_selected_vars()
         return rx.redirect("/")
 
 

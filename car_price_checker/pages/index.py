@@ -73,10 +73,10 @@ def index():
             ),
             rx.cond(
                 State.selected_transmission != "",
-                create_number_input_line("Horsepower:", State.selected_horsepower, "Enter kms", State.set_selected_horsepower,),
+                create_number_input_line("Power (hp):", State.selected_power, "Enter kms", State.set_selected_power,),
             ),
             rx.cond(
-                State.selected_horsepower != 0,
+                State.selected_power != 0,
                 create_number_input_line("Kms:", State.selected_kms, "Enter kms", State.set_selected_kms,),
             ),
             rx.button(
