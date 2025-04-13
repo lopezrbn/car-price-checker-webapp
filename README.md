@@ -1,100 +1,208 @@
-# Car Price Checker
+# car-price-checker-webapp
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## 🚗 Project Overview
 
-## Table of Contents
+**car-price-checker-webapp** is the user-facing interface of the full-stack `car-price-checker` system.  
+It allows users to input the details of their car and receive an estimated market value via a simple, responsive web interface.
 
-1. [Project Overview](#project-overview)
-2. [Features](#features)
-3. [Technical Details](#technical-details)
-   - [Data Collection](#data-collection)
-   - [Data Processing](#data-processing)
-   - [Machine Learning Model](#machine-learning-model)
-4. [Installation and Usage](#installation-and-usage)
-5. [Contributing](#contributing)
-6. [License](#license)
-7. [Contact](#contact)
+This webapp is built with **[Reflex](https://reflex.dev)** — a Python framework that enables Data Scientists and backend developers to build complete web applications **using only Python**, without the need for JavaScript or frontend frameworks.
 
-## Project Overview
+The app is live at:  
+👉 [https://car-price-checker.lopezrbn.com/](https://car-price-checker.lopezrbn.com/)
 
-Car Price Checker is a web application designed to estimate the market value of used cars in Spain. By scraping data from [coches.com](https://www.coches.com/), the application trains a machine learning regression model to predict the price of any specified vehicle. This project serves as a demonstration of data science and machine learning capabilities, and is part of my open portfolio on GitHub.
+---
 
-Access the live application here: [https://car-price-checker.lopezrbn.com/](https://car-price-checker.lopezrbn.com/)
+## 📦 Repository Scope
 
-## Features
+This repository contains only the **web interface** of the system.
 
-- **User-Friendly Interface**: Input vehicle details to receive an estimated market price.
-- **Comprehensive Data Collection**: Aggregates data from a leading Spanish used car marketplace.
-- **Machine Learning Integration**: Utilizes a regression model trained on real-world data for price predictions.
+It is tightly coupled with the [car-price-checker-api](https://github.com/lopezrbn/car-price-checker-api) repository, which exposes a REST API used to compute real-time predictions based on a ML model.
 
-## Technical Details
+---
 
-### Data Collection
+## 🖥️ Webapp Functionality
 
-The application scrapes listings from [coches.com](https://www.coches.com/), extracting relevant details such as:
+- Drop-down selectors for:
+  - Manufacturer
+  - Model
+  - Year
+  - Month
+  - Fuel type
+  - Transmission
+- Numeric inputs for:
+  - Horsepower (HP)
+  - Kilometers driven (Kms)
+- A "Search" button that sends the data to the backend API and redirects to a results page.
+- The predicted car price is shown clearly, along with a summary of the input.
 
-- Selling price
-- Car model
-- Fuel type
-- Location
-- Year of manufacture
-- Mileage
-- Transmission type
-- Power (HP)
-- Number of doors
+The webapp is designed to be **minimalist, fast, and functional**, focusing on demonstrating a real-world ML use case.
 
-The scraping process involves:
+---
 
-1. **Gathering Listing URLs**: Constructing search URLs for each car model and iterating through available pages to collect individual listing links.
-2. **Extracting Data**: Visiting each listing to extract detailed information, especially attributes not available on summary pages.
+## 📁 Code Structure
 
-For implementation details, refer to the `cars_scraper.py` script in the repository.
+- `car-price-checker-webapp.py` – Main Reflex app entrypoint that registers pages.
+- `state.py` – Core logic and state management, including API call logic and user interaction flow.
+- `index.py` – UI page with the input form.
+- `results.py` – UI page with the prediction output.
+- `rxconfig.py` – Reflex configuration file (ports, app name, etc.).
+- `reflex-bg-car-price-checker.service` – systemd unit file to run the app as a background service on Ubuntu.
+- `nginx.conf` – Reverse proxy config to serve the app under a domain.
 
-### Data Processing
+---
 
-Collected data undergoes cleaning and preprocessing to ensure quality and consistency:
+## ⚙️ Reflex Framework
 
-- **Handling Missing Values**: Imputing or removing incomplete records.
-- **Data Transformation**: Converting categorical variables into numerical formats suitable for modeling.
-- **Feature Engineering**: Creating new features or modifying existing ones to enhance model performance.
+Reflex handles both frontend and backend of the app internally:
 
-### Machine Learning Model
+- **Frontend** (served on port `3002`) – the visual interface seen by the user.
+- **Backend** (served on port `8002`) – handles state, events, and API requests.
 
-A multivariate linear regression model is employed to predict car prices. Key steps include:
+Thanks to Reflex, the entire app can be built and maintained using only Python.
 
-1. **Model Training**: Fitting the regression model using the processed dataset.
-2. **Evaluation**: Assessing model performance using metrics such as Mean Absolute Error (MAE) and R-squared.
-3. **Prediction**: Deploying the trained model to estimate prices based on user input.
+---
 
-The model accounts for various factors influencing car prices, including age, mileage, brand, model, and additional features.
+## 🚀 Deployment
 
-## Installation and Usage
+### `rxconfig.py` setup
 
-To run the application locally:
+```python
+import reflex as rx
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/lopezrbn/car-price-checker.git
-   cd car-price-checker
+config = rx.Config(
+    app_name="car-price-checker-webapp",
+    frontend_port=3002,
+    backend_port=8002,
+)
+```
 
-2. **Install Dependencies**: Ensure you have Python 3.7 or higher installed. Then, install required packages:
-    ```bash
-    pip install -r requirements.txt
+### NGINX configuration
 
-3. **Run the Application**: Start the web application using Reflex:
-    ```bash
-    reflex run
+A reverse proxy is required to expose the Reflex app on a public domain. The frontend and backend must both be routed correctly, including WebSocket support:
 
-The application will be accessible at [http://localhost:3000](http://localhost:3000)
+```nginx
+server {
+    listen 80;
+    server_name car-price-checker.lopezrbn.com;
 
-## Contributing
+    # Frontend (port 3002)
+    location / {
+        proxy_pass http://localhost:3002;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
 
-Contributions are welcome! If you have suggestions or improvements, please open an issue or submit a pull request. Ensure that your contributions align with the project's objectives and maintain code quality.
+    # Backend (port 8002)
+    location /_event {
+        proxy_pass http://localhost:8002;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+}
+```
 
-## License
+### systemd service
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/lopezrbn/car-price-checker/blob/main/LICENSE) file for details.
+You can run the Reflex app as a background service using systemd. An example unit file (`reflex-bg-car-price-checker.service`) is included:
 
-## Contact
+```ini
+[Unit]
+Description=Car Price Checker Webapp (Reflex)
+After=network.target
 
-For inquiries or feedback, please contact me at <lopezrbn@gmail.com>.
+[Service]
+User=ubuntu
+WorkingDirectory=/path/to/webapp
+ExecStart=/path/to/.venv/bin/reflex run --env prod
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+---
+
+## ⚙️ Installation & Quickstart
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/lopezrbn/car-price-checker-webapp.git
+cd car-price-checker-webapp
+```
+
+### 2. Create and activate a virtual environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
+
+### 3. Install Reflex
+
+```bash
+pip install reflex
+```
+
+### 4. Run in development mode
+
+```bash
+reflex run
+```
+
+### 5. Export for production (optional)
+
+```bash
+reflex export --env prod
+```
+
+---
+
+## 🛠 Tech Stack
+
+- **Reflex** (Python web framework)
+- **Python** for all logic and UI
+- **FastAPI** (in backend API consumed by this app)
+- **NGINX** as reverse proxy
+- **systemd** for background service management
+
+---
+
+## 🔗 Live Demo
+
+The app is deployed and available at:
+
+👉 [https://car-price-checker.lopezrbn.com/](https://car-price-checker.lopezrbn.com/)
+
+---
+
+## 🚧 Future Improvements
+
+- Add client-side input validation.
+- Improve responsive design for mobile screens.
+- Show loading indicators while waiting for predictions.
+- Handle API errors more gracefully with user feedback.
+- Expand to include visualizations or comparisons.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).  
+Feel free to use, modify, and distribute the code with attribution.
+
+---
+
+## 📫 Contact
+
+If you have any questions, suggestions, or feedback, feel free to reach out:
+
+- **Rubén López**  
+- Data Scientist  
+- 📧 lopezrbn@gmail.com
+
+---
