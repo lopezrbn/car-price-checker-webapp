@@ -1,0 +1,18 @@
+[Unit]
+Description= Car-price-checker webapp Reflex service
+After=network.target
+
+[Service]
+User=ubuntu
+Type=simple
+WorkingDirectory=/home/ubuntu/car-price-checker-webapp/
+Environment="PATH=/home/ubuntu/car-price-checker-webapp/.venv/bin:/usr/bin"
+ExecStartPre=/home/ubuntu/car-price-checker-webapp/.venv/bin/python3 -m reflex init
+ExecStart=/home/ubuntu/car-price-checker-webapp/.venv/bin/python3 -m reflex run --env prod
+#ExecStart=echo $PATH
+RemainAfterExit=yes
+TimeoutSec=0
+#Restart=always
+
+[Install]
+WantedBy=multi-user.target
