@@ -17,19 +17,34 @@ for manuf, models in cars.items():
         rel_path = "data/csv"
         file_path = manuf + "_" + mod + ".csv"
         full_path = os.path.join(abs_path, rel_path, file_path)
-        if os.path.isfile(full_path) == False:
-
+        if not os.path.isfile(full_path):
             initial_url = "https://www.coches.com/coches-segunda-mano/" + manuf + "-" + mod + ".htm?page="
             
-            res = requests.get(initial_url + str(0))
-            soup = bs4.BeautifulSoup(res.text, "lxml")
-            cars_to_get = int(soup.find("p", class_="vo-subtitle").text.split(maxsplit=2)[1].replace(".", ""))
-            sleep_timer = 0
+            try:
+                res = requests.get(initial_url + str(0))
+                res.raise_for_status()  # Raise an HTTPError for bad responses
+            except requests.exceptions.RequestException as e:
+                print(f"Request failed for {initial_url}: {e}")
+                continue
 
+            soup = bs4.BeautifulSoup(res.text, "lxml")
+            subtitle_element = soup.find("p", class_="vo-subtitle")
+            if subtitle_element:
+                try:
+                    cars_to_get = int(subtitle_element.text.split(maxsplit=2)[1].replace(".", ""))
+                except (IndexError, ValueError) as e:
+                    print(f"Failed to parse cars_to_get for {initial_url}: {e}")
+                    cars_to_get = 0
+            else:
+                cars_to_get = 0  # or handle this case appropriately
+
+            sleep_timer = 0
             links = []
             counter = 0
-            pages = int(round(cars_to_get/20, 0))
+            pages = int(round(cars_to_get / 20, 0))
             pages = 1 if pages < 1 else pages
+
+            print(f"Processing {manuf} {mod}: {cars_to_get} cars, {pages} pages")
 
             
             for page in range(pages):

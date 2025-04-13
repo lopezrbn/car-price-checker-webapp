@@ -1,3 +1,4 @@
+beautifulsoup4==4.10.0
 pandas==2.2.3
 reflex==0.6.8
 requests==2.32.3

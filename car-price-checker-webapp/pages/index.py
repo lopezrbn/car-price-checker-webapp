@@ -65,6 +65,10 @@ def index():
             ),
             rx.cond(
                 State.selected_year != "",
+                create_select_line("Month:", State.months_list, State.selected_month, "Select month", State.set_selected_month,),
+            ),
+            rx.cond(
+                State.selected_month != "",
                 create_select_line("Fuel:", State.fuels_list, State.selected_fuel, "Select fuel", State.set_selected_fuel,),
             ),
             rx.cond(
